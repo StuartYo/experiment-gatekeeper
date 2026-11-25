@@ -165,7 +165,7 @@ def start(slug: str, actor: str = "agent", c: Client | None = None) -> dict:
     rec.data["status"] = "running"
     rec.data["started_at"] = exp.get("started_at") or now()
     rec.data["started_fingerprint"] = fp
-    rec.log(actor, "started in Flagsmith", f"approved by {ok['by']} at {ok['at']}")
+    rec.log(actor, "started in Flagsmith", f"approved by {ok['by']}")
     return {"status": "running", "experiment": exp, "approved_by": ok["by"]}
 
 

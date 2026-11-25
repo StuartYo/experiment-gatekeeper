@@ -2,7 +2,7 @@
 
 A CLI, MCP server and console that sit between a coding agent and Flagsmith Experimentation. The agent can draft an experiment, but it can't start one with broken tracking, start one nobody approved, or roll out a "winner" the data doesn't support yet.
 
-**Try it without installing anything:** [recorded console](DEMO_URL) (a real run against self-hosted Flagsmith __FS_VERSION__, replayed step by step). Demo video: VIDEO_URL.
+**Try it without installing anything:** [recorded console](DEMO_URL) (a real run against self-hosted Flagsmith 2.295.2, replayed step by step). Demo video: VIDEO_URL.
 
 Track 2, AI Agents and Feature Flags.
 
@@ -33,16 +33,28 @@ All numbers come from `eval/results.json` and `demo/` runs; nothing below is typ
 
 | | bugs caught (of 23) | false alarms on clean apps (of 5) |
 |---|---|---|
-| Model with the official prompt | __BASE__ | __BASE_FP__ |
-| Gatekeeper preflight | __GK__ | __GK_FP__ |
+| Model with the official prompt | 19 | 0 |
+| Gatekeeper preflight | 23 | 0 |
 
-__PER_RULE__
+| Rule | planted | model with official prompt | Gatekeeper |
+|---|---|---|---|
+| G1 events not enabled | 5 | 5 | 5 |
+| G2 no default handler (warning) | 2 | 0 | 2 |
+| G3 new visitor ID per request | 5 | 4 | 5 |
+| G4 different identifiers | 3 | 2 | 3 |
+| G5 script exits before flush | 1 | 1 | 1 |
+| G6 events sent to Cloud | 5 | 5 | 5 |
+| G9 flag read before identify() | 2 | 2 | 2 |
 
-We wrote the corpus and the rules, so Gatekeeper's score here is expected; read it as "the rules do what they say". The useful number is the baseline: even when asked directly, the model missed __BASE_MISS__ of 23. Its misses were mixed-up identifiers and fresh IDs in files with a second bug.
+We wrote the corpus and the rules, so Gatekeeper's score here is expected; read it as "the rules do what they say". The useful number is the baseline: even when asked directly, the model missed 4 of 23. It missed both missing-default-handler warnings, one mixed-up identifier and one new-ID-per-request bug.
 
-**End to end on real Flagsmith** (self-hosted __FS_VERSION__, Flagsmith database as the warehouse, simulated visitors, recorded in the [console replay](DEMO_URL)):
+**End to end on real Flagsmith** (self-hosted 2.295.2, Flagsmith database as the warehouse, simulated visitors, recorded in the [console replay](DEMO_URL)):
 
-__E2E__
+| Run | Visitors per group | Flagsmith's results page | Gatekeeper |
+|---|---|---|---|
+| Early read | control 181, short 219 | 44% chance to win, lift -2.3% | `keep_running`: below the planned 1,693 per group; the early look is logged |
+| Planned sample | control 1,825 (30.4% signed up), short 1,814 (33.5%) | 97.2% chance to win, lift +10.2% (interval -0.3% to +20.7%) | `ship short`; after a person approved, Gatekeeper completed the experiment in Flagsmith with `short` |
+| Slow control page | control 1,414, short 1,932 (42.3% / 57.7% against a 50/50 plan) | 99.9% chance to win (shown as 100%), lift +18.0%, no SRM result | `invalid`: split mismatch, chi-squared p = 3.4e-19; rollout is blocked |
 
 **Something we found in Flagsmith.** The setup prompt adds variations with `--weight 0` and sets the split on the experiment's rollout. Flagsmith's built-in SRM check reads the split from the environment default, sees a 0% variation and skips the test, so the results page reports no SRM result even when the split is badly off. Gatekeeper checks against the split that was approved, which is why it catches the slow-page scenario above. (Flagsmith marks this as a TODO in `experimentation/services.py`, `_expected_variant_shares`.)
 
@@ -110,7 +122,7 @@ Statistical thresholds are frozen in [DESIGN.md](DESIGN.md).
 - Preflight is static analysis with heuristics. It reads Python with the `ast` module and JavaScript with patterns, so unusual code can slip past it.
 - An agent with unrestricted shell access on your machine could read the approver key in `~/.gatekeeper/`. The gate is designed for agents working through MCP or a sandboxed shell; keep the key out of the agent's reach.
 - Flagsmith Experimentation is in beta, and results refresh at most once every five minutes.
-- Tested on Windows against self-hosted Flagsmith __FS_VERSION__. The Cloud API paths are the same, but we did not run against Cloud.
+- Tested on Windows against self-hosted Flagsmith 2.295.2. The Cloud API paths are the same, but we did not run against Cloud.
 
 ## AI use
 

@@ -5,8 +5,8 @@
   const pct = (x, d = 1) => (x == null ? "–" : `${(x * 100).toFixed(d)}%`);
   const spct = (x, d = 1) => (x == null ? "–" : `${x >= 0 ? "+" : ""}${(x * 100).toFixed(d)}%`);
   const n = (x) => (x == null ? "–" : Number(x).toLocaleString("en-US"));
-  const time = (iso) => { if (!iso) return ""; const d = new Date(iso); return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); };
-  const day = (iso) => { if (!iso) return ""; const d = new Date(iso); return d.toLocaleDateString([], { month: "short", day: "numeric" }); };
+  const time = (iso) => { if (!iso) return ""; const d = new Date(iso); return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }); };
+  const day = (iso) => { if (!iso) return ""; const d = new Date(iso); return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
 
   const token = new URLSearchParams(location.hash.slice(1)).get("token") || "";
   const state = { mode: "live", list: [], sel: null, stage: null, busy: null, msg: null };
@@ -74,7 +74,7 @@
     const b = $("#banner");
     if (state.mode === "replay") {
       b.hidden = false;
-      b.innerHTML = `<div class="wrap"><span><b>Recorded run.</b> Every screen below was captured from a real self-hosted Flagsmith ${esc(m.flagsmith_version || "")} on ${esc(day(m.recorded_at))}. Traffic is simulated by a script and labelled as such. Buttons replay the next recorded step.</span></div>`;
+      b.innerHTML = `<div class="wrap"><span class="long"><b>Recorded run.</b> Every screen below was captured from a real self-hosted Flagsmith ${esc(m.flagsmith_version || "")} on ${esc(day(m.recorded_at))}. Traffic is simulated by a script and labelled as such. Buttons replay the next recorded step.</span><span class="short"><b>Recorded run:</b> real Flagsmith, simulated traffic.</span></div>`;
     }
     $("#count").textContent = state.list.length;
     $("#exp-list").innerHTML = state.list.map((x, i) => {
@@ -95,7 +95,7 @@
         <div class="exp-head">
           <div class="exp-title"><h1>${esc(e.name)}</h1>${st(e.status)}</div>
           <p class="hyp">${esc(sp.hypothesis)}</p>
-          ${state.list[state.sel].story ? `<p class="note">${esc(state.list[state.sel].story)}</p>` : ""}
+          ${state.list[state.sel].story ? `<p class="story">${esc(state.list[state.sel].story)}</p>` : ""}
           <dl class="meta">
             <div><dt>Flag</dt><dd>${esc(sp.flag)}</dd></div>
             <div><dt>Metric event</dt><dd>${esc(sp.metric.event)}</dd></div>
@@ -123,7 +123,8 @@
     return `<button class="btn ${kind}" data-act="${action}" ${disabled || state.busy ? "disabled" : ""}>${busy ? '<span class="spin" aria-hidden="true"></span>' : ""}${esc(busy ? busyText[action] || "Working…" : label)}</button>`;
   }
   const busyText = { preflight: "Scanning code…", request: "Re-checking code and Flagsmith…", start: "Checking approval, starting…", verdict: "Refreshing results in Flagsmith…", "request-ship": "Asking…", ship: "Completing in Flagsmith…" };
-  const msg = () => (state.msg ? `<div class="${state.msg.kind}">${esc(state.msg.text)}</div>` : "");
+  const shortMsg = (t) => t.replace(/ Fix them, then ask again:.*$/s, " Fix them (listed below), then ask again.");
+  const msg = () => (state.msg ? `<div class="${state.msg.kind}">${esc(shortMsg(state.msg.text))}</div>` : "");
 
   function stagePanel(e) {
     const html = ({ preflight: preflightPanel, approval: approvalPanel, running: runningPanel, verdict: verdictPanel })[state.stage]?.(e) ?? rolloutPanel(e);
@@ -142,17 +143,20 @@
     const head = p.clean
       ? `<h2>Preflight is clean</h2><p>${n(p.files_scanned)} files checked against rules G1–G9. Nothing will quietly break the counts.</p>`
       : `<h2>${p.blocking} problem${p.blocking === 1 ? "" : "s"} would ruin this experiment</h2><p>The experiment cannot be approved until these are fixed. Each one is a way Flagsmith would record wrong or zero data.</p>`;
-    const rows = (p.findings || []).map((f) => `
+    let opened = false;
+    const rows = (p.findings || []).map((f) => {
+      const open = !opened && f.severity === "block" ? (opened = true) : false;
+      return `
       <tr>
-        <td><span class="st ${f.severity === "block" ? "block" : "wait"}">${f.severity === "block" ? "Blocks" : "Warning"}</span></td>
-        <td><span class="rule">${esc(f.rule)}</span></td>
+        <td class="sev"><span class="st ${f.severity === "block" ? "block" : "wait"}">${f.severity === "block" ? "Blocks" : "Warning"}</span></td>
+        <td class="rl"><span class="rule">${esc(f.rule)}</span></td>
         <td>
-          <div class="f-title">${esc(f.title)}</div>
-          <div class="f-where">${esc(f.file)}${f.line ? ":" + f.line : ""}</div>
+          <details ${open ? "open" : ""}><summary><span class="f-title">${esc(f.title)}</span><span class="f-where">${esc(f.file)}${f.line ? ":" + f.line : ""}</span></summary>
           ${f.snippet ? `<div class="f-snip">${esc(f.snippet)}</div>` : ""}
-          <div class="f-more">${f.detail ? `<span>${esc(f.detail)}</span>` : ""}<span><b>Why it matters.</b> ${esc(f.why)}</span><span><b>Fix.</b> ${esc(f.fix)}</span></div>
+          <div class="f-more">${f.detail ? `<span>${esc(f.detail)}</span>` : ""}<span><b>Why it matters.</b> ${esc(f.why)}</span><span><b>Fix.</b> ${esc(f.fix)}</span></div></details>
         </td>
-      </tr>`).join("");
+      </tr>`;
+    }).join("");
     const action = state.mode === "replay" ? nextLabel(e) : null;
     return `
       <div class="stage-top"><div>${head}</div><div class="actions">${action ? btn(action, "next") : btn("Re-run preflight", "preflight", "primary")}</div></div>
@@ -213,7 +217,7 @@
     if (!v) return `<div class="stage-top"><div><h2>No results read yet</h2><p>Start the experiment, then read results.</p></div></div>`;
     const fsBig = v.flagsmith_says ? v.flagsmith_says.replace(/^Flagsmith: /, "") : "Collecting data";
     const fsWin = (v.arms || []).filter((a) => a.chance_to_win != null).sort((a, b) => b.chance_to_win - a.chance_to_win)[0];
-    const rows = (v.arms || []).map((a) => `<tr><td class="mono">${esc(a.variant)}</td><td class="r num">${n(a.exposures)}</td><td class="r num">${n(a.conversions)}</td><td class="r num">${pct(a.rate)}</td><td class="r num">${a.lift == null ? "–" : spct(a.lift)}</td><td class="r num">${a.ci_low == null ? "–" : `${spct(a.ci_low)} to ${spct(a.ci_high)}`}</td><td class="r num">${a.chance_to_win == null ? "–" : pct(a.chance_to_win, 0)}</td></tr>`).join("");
+    const rows = (v.arms || []).map((a) => `<tr><td class="mono">${esc(a.variant)}</td><td class="r num" data-l="Visitors">${n(a.exposures)}</td><td class="r num">${n(a.conversions)}</td><td class="r num">${pct(a.rate)}</td><td class="r num c5">${a.lift == null ? "–" : spct(a.lift)}</td><td class="r num c6">${a.ci_low == null ? "–" : `${spct(a.ci_low)} to ${spct(a.ci_high)}`}</td><td class="r num">${a.chance_to_win == null ? "–" : pct(a.chance_to_win, 0)}</td></tr>`).join("");
     const canShip = ["ship", "drop"].includes(v.decision) && e.status !== "shipped" && e.status !== "awaiting_ship_approval";
     const act = state.mode === "replay" ? (nextLabel(e) ? btn(nextLabel(e), "next") : "") : canShip ? btn("Ask for rollout approval", "request-ship") : btn("Read results again", "verdict", "btn");
     return `
@@ -221,11 +225,18 @@
       ${msg()}
       <div class="compare">
         <div><span class="lbl">Flagsmith results page</span><span class="big">${fsWin ? `${esc(fsWin.variant)} ${pct(fsWin.chance_to_win, 0)} to win` : "Collecting data"}</span><p>${esc(fsBig)}</p></div>
-        <div class="gk"><span class="lbl">Gatekeeper verdict</span><span class="big ${esc(v.decision)}">${esc({ ship: "Ship", drop: "Keep control", keep_running: "Keep running", invalid: "Data invalid" }[v.decision])}${v.winner && v.decision === "ship" ? " " + esc(v.winner) : ""}</span><p>${esc((v.checks.find((c) => c.status === "fail") || v.checks.find((c) => c.status === "wait") || v.checks.at(-1)).detail)}</p></div>
+        <div class="gk ${esc(v.decision)}"><span class="lbl">Gatekeeper verdict</span><span class="big ${esc(v.decision)}">${esc({ ship: "Ship", drop: "Keep control", keep_running: "Keep running", invalid: "Data invalid" }[v.decision])}${v.winner && v.decision === "ship" ? " " + esc(v.winner) : ""}</span><p>${esc(gkReason(v))}</p></div>
       </div>
-      <div class="tbl tbl-scroll"><table><thead><tr><th>Group</th><th class="r">Visitors</th><th class="r">Converted</th><th class="r">Rate</th><th class="r">Lift</th><th class="r">95% interval</th><th class="r">Chance to win</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="tbl tbl-scroll res"><table><thead><tr><th>Group</th><th class="r">Visitors</th><th class="r">Converted</th><th class="r">Rate</th><th class="r c5">Lift</th><th class="r c6">95% interval</th><th class="r">Chance to win</th></tr></thead><tbody>${rows}</tbody></table></div>
       ${progress(e, v)}
       <ul class="checks">${v.checks.map((c) => `<li><span><span class="st ${({ pass: "pass", fail: "block", wait: "wait", warn: "wait" })[c.status]}">${esc({ pass: "Pass", fail: "Fail", wait: "Not yet", warn: "Warning" }[c.status])}</span></span><div><div class="lb">${esc(c.label)}</div><div class="dt">${esc(c.detail)}</div></div></li>`).join("")}</ul>`;
+  }
+
+  function gkReason(v) {
+    const bad = v.checks.find((c) => c.status === "fail") || v.checks.find((c) => c.status === "wait");
+    if (bad && v.decision !== "ship") return bad.detail;
+    const need = v.checks.find((c) => c.id === "V3");
+    return `Split matches the approved plan, ${need ? need.detail.charAt(0).toLowerCase() + need.detail.slice(1, -1) : "planned sample reached"}, and ${v.checks.find((c) => c.id === "V6")?.detail.replace(/\.$/, "")} clears the 95% bar set before the test.`;
   }
 
   function rolloutPanel(e) {

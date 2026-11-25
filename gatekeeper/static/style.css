@@ -233,13 +233,17 @@ dialog input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
 }
 @media (max-width: 860px) {
   .wrap { padding: 0 14px; }
-  .shell { grid-template-columns: 1fr; padding-top: 14px; gap: 14px; }
+  .shell { grid-template-columns: minmax(0, 1fr); padding-top: 14px; gap: 14px; }
+  .banner { font-size: 12px; }
+  .track li { min-width: 0; }
   .list { position: static; }
   #exp-list { display: flex; overflow-x: auto; gap: 4px; }
   #exp-list li { flex: 0 0 220px; }
   .crumb { display: none; }
   .exp-head, .stage { padding: 16px; }
-  .track { grid-template-columns: repeat(5, minmax(96px, 1fr)); overflow-x: auto; padding: 0 4px; }
+  .track { grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0; }
+  .track button { padding: 12px 6px 10px; }
+  .track .t { font-size: 12.5px; }
   .track .s { display: none; }
   .compare { grid-template-columns: 1fr; }
   .compare > div + div { border-left: 0; border-top: 1px solid var(--line); }
@@ -251,3 +255,71 @@ dialog input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
   .btn { height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* review round 2 */
+.banner .short { display: none; }
+.story { margin: 0; color: var(--mute); font-size: 14px; max-width: 80ch; }
+.exp-title h1 { font-size: 20px; }
+.stage-top { flex-direction: column; align-items: flex-start; gap: 12px; }
+.stage-top h2 { font-size: 20px; line-height: 28px; }
+.stage-top p { max-width: 72ch; }
+.meta { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+.tbl { border: 0; border-radius: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+td.sev, td.rl { width: 1%; white-space: nowrap; }
+details summary { cursor: pointer; list-style: none; display: block; }
+details summary .f-title { margin-right: 10px; }
+details summary .f-where { display: inline; }
+details summary::-webkit-details-marker { display: none; }
+details summary::before { content: "+"; font-family: var(--mono); color: var(--mute); display: inline-block; width: 16px; }
+details[open] summary::before { content: "\2212"; }
+.f-where { margin-top: 0; }
+.compare { border: 0; border-radius: var(--r-md); }
+.compare > div:first-child { background: var(--soft); border-radius: var(--r-md) 0 0 var(--r-md); }
+.compare > div + div { border-left: 0; border-radius: 0 var(--r-md) var(--r-md) 0; }
+.compare .gk { background: var(--soft); }
+.compare .gk.ship, .compare .gk.drop { background: var(--pass-soft); }
+.compare .gk.invalid { background: var(--block-soft); }
+.compare .gk.keep_running { background: var(--wait-soft); }
+.compare .big { font-size: 28px; line-height: 34px; }
+.f-more, .note, .refused, .checks .dt, .who, #timeline .ac { font-size: 14px; }
+#timeline .dt2, .hint { font-size: 12px; }
+.list, .log { position: static; }
+#timeline { max-height: none; }
+.list { position: sticky; top: 80px; }
+@media (max-width: 860px) {
+  .meta { grid-template-columns: 1fr 1fr; }
+  .banner .long { display: none; }
+  .banner .short { display: inline; }
+  .list { position: static; }
+  .tbl table, .tbl tbody, .tbl tr, .tbl td { display: block; width: auto; }
+  .tbl thead { display: none; }
+  .tbl tr { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .tbl td { border: 0; padding: 4px 0; }
+  .tbl td.sev, .tbl td.rl { display: inline-block; margin-right: 8px; }
+  .res table { display: table; width: 100%; } .res thead { display: table-header-group; } .res tbody { display: table-row-group; }
+  .res tr { display: table-row; padding: 0; } .res td, .res th { display: table-cell; padding: 10px 6px; border-bottom: 1px solid var(--line); }
+  .res .c5, .res .c6 { display: none !important; }
+  .compare > div:first-child, .compare > div + div { border-radius: var(--r-md); }
+  .compare { gap: 8px; }
+}
+
+/* review round 3: four type sizes (28 / 20 / 14 / 12), shorter mobile path to the main action */
+.brand, .toplink, .list-head h2, .log-head h2, .banner, .arm .v, .spec dt, dialog label, dialog input { font-size: 14px; }
+.mono, code, .meta dd, .arm .nm, .split, #timeline .tm, .actor, .track .k { font-size: 12px; }
+dialog h3 { font-size: 20px; line-height: 28px; }
+#timeline .dt2 { color: #575b62; }
+.meta { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); align-items: start; }
+.meta dd { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spec { border: 0; border-radius: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.spec dt { background: none; color: var(--mute); }
+.spec dt, .spec dd { padding: 10px 0; }
+.spec dd { padding-left: 16px; }
+.checks .dt, .f-more, .compare p, .stage-top p { max-width: 72ch; }
+@media (max-width: 860px) {
+  .banner { font-size: 12px; }
+  .track .t { font-size: 12px; }
+  .story, .meta { display: none; }
+  .hyp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .exp-head { gap: 8px; }
+  .spec dd { padding-left: 0; padding-top: 0; border-top: 0; }
+}

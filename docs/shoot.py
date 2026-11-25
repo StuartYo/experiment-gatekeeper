@@ -21,13 +21,12 @@ def main() -> None:
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
-        b = p.chromium.launch()
+        b = p.chromium.launch(channel="msedge")
         for name, (w, h) in SIZES.items():
             pg = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=2 if name == "390" else 1)
             pg.goto(args.url)
             pg.wait_for_selector(".track")
             pg.wait_for_timeout(600)
-            pg.screenshot(path=str(out / f"{name}_srm_verdict.png"), full_page=True)
             # second experiment: step through every frame and shoot key stages
             pg.click("#exp-list li:nth-child(1) button")
             pg.wait_for_timeout(300)
@@ -45,6 +44,11 @@ def main() -> None:
                 pg.wait_for_timeout(700)
                 safe = "".join(ch if ch.isalnum() else "_" for ch in label)[:40]
                 pg.screenshot(path=str(out / f"{name}_main_{i + 1:02d}_{safe}.png"), full_page=True)
+            pg.click("#exp-list li:nth-child(2) button")
+            pg.wait_for_timeout(300)
+            pg.click(".stage .actions button")
+            pg.wait_for_timeout(900)
+            pg.screenshot(path=str(out / f"{name}_srm_verdict.png"), full_page=True)
             pg.close()
         b.close()
     print("shots in", out)

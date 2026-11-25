@@ -1,0 +1,3033 @@
+{
+ "mode": "replay",
+ "recorded_at": "2026-11-25T17:01:00+00:00",
+ "environment": "self-hosted (local)",
+ "flagsmith_version": "2.295.2",
+ "experiments": [
+  {
+   "start": 0,
+   "story": "A coding agent sets up a signup-form test. Gatekeeper stops the broken first version, waits for a person, and refuses an early winner.",
+   "frames": [
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "blocked",
+     "approvals": [],
+     "requests": [],
+     "peeks": [],
+     "verdicts": [],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_broken",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_broken",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 4,
+      "warnings": 1,
+      "findings": [
+       {
+        "rule": "G1",
+        "file": "app.py",
+        "line": 13,
+        "snippet": "flagsmith = Flagsmith(",
+        "detail": "",
+        "severity": "block",
+        "title": "Events are not enabled",
+        "why": "The SDK only records exposures and conversions when events are enabled. Without it the experiment shows zero visitors.",
+        "fix": "Create the client with enable_events=True (Python) or enableEvents: true (JavaScript)."
+       },
+       {
+        "rule": "G2",
+        "file": "app.py",
+        "line": 13,
+        "snippet": "flagsmith = Flagsmith(",
+        "detail": "",
+        "severity": "warn",
+        "title": "No default flag handler",
+        "why": "When Flagsmith cannot be reached, a client without a default handler has no value to serve, so the page can break or render nothing for some visitors.",
+        "fix": "Pass default_flag_handler (Python) or defaultFlags (JavaScript) with the control value."
+       },
+       {
+        "rule": "G3",
+        "file": "app.py",
+        "line": 28,
+        "snippet": "flag = flagsmith.get_experiment_flag(\"signup_form\", identifier=visitor_id)",
+        "detail": "identifier comes from str(uuid.uuid4())",
+        "severity": "block",
+        "title": "A new visitor ID is made on every request",
+        "why": "Bucketing is deterministic on the identifier. A fresh random ID per request puts the same person in a different group on every page view and counts them many times.",
+        "fix": "Create the ID once, store it (cookie, local storage, session or user ID) and reuse it."
+       },
+       {
+        "rule": "G4",
+        "file": "app.py",
+        "line": 36,
+        "snippet": "flagsmith.track_event(\"signup_completed\", identifier=email)",
+        "detail": "conversion uses email; exposure uses visitor_id",
+        "severity": "block",
+        "title": "Exposure and conversion use different identifiers",
+        "why": "Flagsmith joins exposures and conversions per identity. If they are sent under different IDs, no conversion is ever matched to a variation.",
+        "fix": "Send track_event with the same identifier that was passed to get_experiment_flag."
+       },
+       {
+        "rule": "G6",
+        "file": "app.py",
+        "line": 13,
+        "snippet": "flagsmith = Flagsmith(",
+        "detail": "api_url=os.environ.get('FLAGSMITH_SDK_URL', 'http://localhost:8000/api/v1/')",
+        "severity": "block",
+        "title": "Self-hosted API but events still go to Flagsmith Cloud",
+        "why": "Setting the API URL does not move events. Without an events URL the SDK posts events to Cloud and the self-hosted warehouse never sees them.",
+        "fix": "Set event_processor_config=EventProcessorConfig(events_api_url=...) (Python) or eventProcessorConfig.eventsApiUrl (JavaScript)."
+       }
+      ],
+      "at": "2026-11-25T16:54:12+00:00",
+      "clean": false
+     },
+     "replay_action": "Agent drafts the experiment",
+     "replay_stage": "preflight",
+     "replay_button": "primary"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "blocked",
+     "approvals": [],
+     "requests": [],
+     "peeks": [],
+     "verdicts": [],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_broken",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_broken",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 4,
+      "warnings": 1,
+      "findings": [
+       {
+        "rule": "G1",
+        "file": "app.py",
+        "line": 13,
+        "snippet": "flagsmith = Flagsmith(",
+        "detail": "",
+        "severity": "block",
+        "title": "Events are not enabled",
+        "why": "The SDK only records exposures and conversions when events are enabled. Without it the experiment shows zero visitors.",
+        "fix": "Create the client with enable_events=True (Python) or enableEvents: true (JavaScript)."
+       },
+       {
+        "rule": "G2",
+        "file": "app.py",
+        "line": 13,
+        "snippet": "flagsmith = Flagsmith(",
+        "detail": "",
+        "severity": "warn",
+        "title": "No default flag handler",
+        "why": "When Flagsmith cannot be reached, a client without a default handler has no value to serve, so the page can break or render nothing for some visitors.",
+        "fix": "Pass default_flag_handler (Python) or defaultFlags (JavaScript) with the control value."
+       },
+       {
+        "rule": "G3",
+        "file": "app.py",
+        "line": 28,
+        "snippet": "flag = flagsmith.get_experiment_flag(\"signup_form\", identifier=visitor_id)",
+        "detail": "identifier comes from str(uuid.uuid4())",
+        "severity": "block",
+        "title": "A new visitor ID is made on every request",
+        "why": "Bucketing is deterministic on the identifier. A fresh random ID per request puts the same person in a different group on every page view and counts them many times.",
+        "fix": "Create the ID once, store it (cookie, local storage, session or user ID) and reuse it."
+       },
+       {
+        "rule": "G4",
+        "file": "app.py",
+        "line": 36,
+        "snippet": "flagsmith.track_event(\"signup_completed\", identifier=email)",
+        "detail": "conversion uses email; exposure uses visitor_id",
+        "severity": "block",
+        "title": "Exposure and conversion use different identifiers",
+        "why": "Flagsmith joins exposures and conversions per identity. If they are sent under different IDs, no conversion is ever matched to a variation.",
+        "fix": "Send track_event with the same identifier that was passed to get_experiment_flag."
+       },
+       {
+        "rule": "G6",
+        "file": "app.py",
+        "line": 13,
+        "snippet": "flagsmith = Flagsmith(",
+        "detail": "api_url=os.environ.get('FLAGSMITH_SDK_URL', 'http://localhost:8000/api/v1/')",
+        "severity": "block",
+        "title": "Self-hosted API but events still go to Flagsmith Cloud",
+        "why": "Setting the API URL does not move events. Without an events URL the SDK posts events to Cloud and the self-hosted warehouse never sees them.",
+        "fix": "Set event_processor_config=EventProcessorConfig(events_api_url=...) (Python) or eventProcessorConfig.eventsApiUrl (JavaScript)."
+       }
+      ],
+      "at": "2026-11-25T16:54:13+00:00",
+      "clean": false
+     },
+     "replay_action": "Agent asks to start anyway",
+     "replay_stage": "preflight",
+     "replay_button": "primary",
+     "replay_msg": "Refused: Preflight found 4 blocking problem(s). Fix them, then ask again: G1 app.py:13 Events are not enabled; G3 app.py:28 A new visitor ID is made on every request; G4 app.py:36 Exposure and conversion use different identifiers; G6 app.py:13 Self-hosted API but events still go to Flagsmith Cloud",
+     "replay_msg_kind": "refused"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "draft",
+     "approvals": [],
+     "requests": [],
+     "peeks": [],
+     "verdicts": [],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:13+00:00",
+      "clean": true
+     },
+     "replay_action": "Agent fixes the code, re-runs preflight",
+     "replay_stage": "preflight",
+     "replay_button": "primary"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "awaiting_approval",
+     "approvals": [],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": true
+      }
+     ],
+     "peeks": [],
+     "verdicts": [],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Agent asks a person to approve",
+     "replay_stage": "approval",
+     "replay_button": "primary"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "awaiting_approval",
+     "approvals": [],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": true
+      }
+     ],
+     "peeks": [],
+     "verdicts": [],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      },
+      {
+       "at": "2026-11-25T16:54:15+00:00",
+       "actor": "agent",
+       "action": "start refused",
+       "detail": "No person has approved this experiment."
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Agent tries to start without waiting",
+     "replay_stage": "approval",
+     "replay_button": "primary",
+     "replay_msg": "Refused: No person has approved this experiment. Run `gk approve signup-form-3-fields-vs-6` in a terminal or use the console.",
+     "replay_msg_kind": "refused"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "approved",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+       "by": "reviewer",
+       "at": "2026-11-25T16:54:16+00:00",
+       "via": "console",
+       "signature": "a03b96c26f610097c713760b9a38af6511e13b0629ea41576b21120da0d7f1d5"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": false
+      }
+     ],
+     "peeks": [],
+     "verdicts": [],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      },
+      {
+       "at": "2026-11-25T16:54:15+00:00",
+       "actor": "agent",
+       "action": "start refused",
+       "detail": "No person has approved this experiment."
+      },
+      {
+       "at": "2026-11-25T16:54:16+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint dda4d9b6ae15"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Approve start",
+     "replay_stage": "approval",
+     "replay_button": "gate"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "running",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+       "by": "reviewer",
+       "at": "2026-11-25T16:54:16+00:00",
+       "via": "console",
+       "signature": "a03b96c26f610097c713760b9a38af6511e13b0629ea41576b21120da0d7f1d5"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": false
+      }
+     ],
+     "peeks": [],
+     "verdicts": [],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      },
+      {
+       "at": "2026-11-25T16:54:15+00:00",
+       "actor": "agent",
+       "action": "start refused",
+       "detail": "No person has approved this experiment."
+      },
+      {
+       "at": "2026-11-25T16:54:16+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint dda4d9b6ae15"
+      },
+      {
+       "at": "2026-11-25T16:54:17+00:00",
+       "actor": "agent",
+       "action": "started in Flagsmith",
+       "detail": "approved by reviewer"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "started_at": "2026-11-25T16:54:17.366781Z",
+     "started_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Agent starts the experiment",
+     "replay_stage": "running",
+     "replay_button": "primary"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "running",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+       "by": "reviewer",
+       "at": "2026-11-25T16:54:16+00:00",
+       "via": "console",
+       "signature": "a03b96c26f610097c713760b9a38af6511e13b0629ea41576b21120da0d7f1d5"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": false
+      }
+     ],
+     "peeks": [
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "smallest_arm": 181,
+       "target": 1693,
+       "by": "agent"
+      }
+     ],
+     "verdicts": [
+      {
+       "decision": "keep_running",
+       "headline": "Keep running: the planned sample is not reached.",
+       "winner": null,
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.06 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "wait",
+         "detail": "181 of 1,693 visitors in the smallest group (11%). Any winner before this is mostly noise."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "wait",
+         "detail": "Best is short at 43.8%, below the 95% bar set before the test."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 181,
+         "conversions": 55.0,
+         "rate": 0.30386740331491713,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 219,
+         "conversions": 65.0,
+         "rate": 0.2968036529680365,
+         "expected_share": 0.5,
+         "lift": -0.02324616023246166,
+         "ci_low": -0.3173129663875261,
+         "ci_high": 0.27082064592260274,
+         "chance_to_win": 0.43843574927649237
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 44% chance to win, lift -2.3% (95% interval -31.7% to +27.1%).",
+       "at": "2026-11-25T16:54:34+00:00",
+       "as_of": "2026-11-25T16:54:34.113922Z",
+       "refreshed": true,
+       "peeks": 1
+      }
+     ],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      },
+      {
+       "at": "2026-11-25T16:54:15+00:00",
+       "actor": "agent",
+       "action": "start refused",
+       "detail": "No person has approved this experiment."
+      },
+      {
+       "at": "2026-11-25T16:54:16+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint dda4d9b6ae15"
+      },
+      {
+       "at": "2026-11-25T16:54:17+00:00",
+       "actor": "agent",
+       "action": "started in Flagsmith",
+       "detail": "approved by reviewer"
+      },
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "keep_running: Keep running: the planned sample is not reached."
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "started_at": "2026-11-25T16:54:17.366781Z",
+     "started_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Agent reads results after 400 simulated visitors",
+     "replay_stage": "verdict",
+     "replay_button": "primary"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "decided",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+       "by": "reviewer",
+       "at": "2026-11-25T16:54:16+00:00",
+       "via": "console",
+       "signature": "a03b96c26f610097c713760b9a38af6511e13b0629ea41576b21120da0d7f1d5"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": false
+      }
+     ],
+     "peeks": [
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "smallest_arm": 181,
+       "target": 1693,
+       "by": "agent"
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "smallest_arm": 1814,
+       "target": 1693,
+       "by": "agent"
+      }
+     ],
+     "verdicts": [
+      {
+       "decision": "keep_running",
+       "headline": "Keep running: the planned sample is not reached.",
+       "winner": null,
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.06 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "wait",
+         "detail": "181 of 1,693 visitors in the smallest group (11%). Any winner before this is mostly noise."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "wait",
+         "detail": "Best is short at 43.8%, below the 95% bar set before the test."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 181,
+         "conversions": 55.0,
+         "rate": 0.30386740331491713,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 219,
+         "conversions": 65.0,
+         "rate": 0.2968036529680365,
+         "expected_share": 0.5,
+         "lift": -0.02324616023246166,
+         "ci_low": -0.3173129663875261,
+         "ci_high": 0.27082064592260274,
+         "chance_to_win": 0.43843574927649237
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 44% chance to win, lift -2.3% (95% interval -31.7% to +27.1%).",
+       "at": "2026-11-25T16:54:34+00:00",
+       "as_of": "2026-11-25T16:54:34.113922Z",
+       "refreshed": true,
+       "peeks": 1
+      },
+      {
+       "decision": "ship",
+       "headline": "Ship short.",
+       "winner": "short",
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.86 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "pass",
+         "detail": "Every group has at least 1,693 visitors."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "pass",
+         "detail": "short: 97.2%."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 1825,
+         "conversions": 555.0,
+         "rate": 0.3041095890410959,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 1814,
+         "conversions": 608.0,
+         "rate": 0.33517089305402425,
+         "expected_share": 0.5,
+         "lift": 0.10213852220467425,
+         "ci_low": -0.002547883095503495,
+         "ci_high": 0.20682492750485199,
+         "chance_to_win": 0.9720786953601197
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 97% chance to win, lift +10.2% (95% interval -0.3% to +20.7%).",
+       "at": "2026-11-25T17:01:00+00:00",
+       "as_of": "2026-11-25T17:00:59.449894Z",
+       "refreshed": true,
+       "peeks": 2
+      }
+     ],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      },
+      {
+       "at": "2026-11-25T16:54:15+00:00",
+       "actor": "agent",
+       "action": "start refused",
+       "detail": "No person has approved this experiment."
+      },
+      {
+       "at": "2026-11-25T16:54:16+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint dda4d9b6ae15"
+      },
+      {
+       "at": "2026-11-25T16:54:17+00:00",
+       "actor": "agent",
+       "action": "started in Flagsmith",
+       "detail": "approved by reviewer"
+      },
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "keep_running: Keep running: the planned sample is not reached."
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "ship: Ship short."
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "started_at": "2026-11-25T16:54:17.366781Z",
+     "started_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Agent reads results at the planned sample",
+     "replay_stage": "verdict",
+     "replay_button": "primary"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "awaiting_ship_approval",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+       "by": "reviewer",
+       "at": "2026-11-25T16:54:16+00:00",
+       "via": "console",
+       "signature": "a03b96c26f610097c713760b9a38af6511e13b0629ea41576b21120da0d7f1d5"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": false
+      },
+      {
+       "kind": "ship",
+       "at": "2026-11-25T17:01:00+00:00",
+       "by": "agent",
+       "note": "ship short",
+       "open": true
+      }
+     ],
+     "peeks": [
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "smallest_arm": 181,
+       "target": 1693,
+       "by": "agent"
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "smallest_arm": 1814,
+       "target": 1693,
+       "by": "agent"
+      }
+     ],
+     "verdicts": [
+      {
+       "decision": "keep_running",
+       "headline": "Keep running: the planned sample is not reached.",
+       "winner": null,
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.06 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "wait",
+         "detail": "181 of 1,693 visitors in the smallest group (11%). Any winner before this is mostly noise."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "wait",
+         "detail": "Best is short at 43.8%, below the 95% bar set before the test."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 181,
+         "conversions": 55.0,
+         "rate": 0.30386740331491713,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 219,
+         "conversions": 65.0,
+         "rate": 0.2968036529680365,
+         "expected_share": 0.5,
+         "lift": -0.02324616023246166,
+         "ci_low": -0.3173129663875261,
+         "ci_high": 0.27082064592260274,
+         "chance_to_win": 0.43843574927649237
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 44% chance to win, lift -2.3% (95% interval -31.7% to +27.1%).",
+       "at": "2026-11-25T16:54:34+00:00",
+       "as_of": "2026-11-25T16:54:34.113922Z",
+       "refreshed": true,
+       "peeks": 1
+      },
+      {
+       "decision": "ship",
+       "headline": "Ship short.",
+       "winner": "short",
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.86 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "pass",
+         "detail": "Every group has at least 1,693 visitors."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "pass",
+         "detail": "short: 97.2%."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 1825,
+         "conversions": 555.0,
+         "rate": 0.3041095890410959,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 1814,
+         "conversions": 608.0,
+         "rate": 0.33517089305402425,
+         "expected_share": 0.5,
+         "lift": 0.10213852220467425,
+         "ci_low": -0.002547883095503495,
+         "ci_high": 0.20682492750485199,
+         "chance_to_win": 0.9720786953601197
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 97% chance to win, lift +10.2% (95% interval -0.3% to +20.7%).",
+       "at": "2026-11-25T17:01:00+00:00",
+       "as_of": "2026-11-25T17:00:59.449894Z",
+       "refreshed": true,
+       "peeks": 2
+      }
+     ],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      },
+      {
+       "at": "2026-11-25T16:54:15+00:00",
+       "actor": "agent",
+       "action": "start refused",
+       "detail": "No person has approved this experiment."
+      },
+      {
+       "at": "2026-11-25T16:54:16+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint dda4d9b6ae15"
+      },
+      {
+       "at": "2026-11-25T16:54:17+00:00",
+       "actor": "agent",
+       "action": "started in Flagsmith",
+       "detail": "approved by reviewer"
+      },
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "keep_running: Keep running: the planned sample is not reached."
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "ship: Ship short."
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "agent",
+       "action": "requested ship approval",
+       "detail": "ship short"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "started_at": "2026-11-25T16:54:17.366781Z",
+     "started_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Agent asks to roll out the winner",
+     "replay_stage": "rollout",
+     "replay_button": "primary"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "awaiting_ship_approval",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+       "by": "reviewer",
+       "at": "2026-11-25T16:54:16+00:00",
+       "via": "console",
+       "signature": "a03b96c26f610097c713760b9a38af6511e13b0629ea41576b21120da0d7f1d5"
+      },
+      {
+       "kind": "ship",
+       "fingerprint": "4128883838a2f9419ed24003a27980a5d56ec073fda6d2994fada7b70a22fc54",
+       "by": "reviewer",
+       "at": "2026-11-25T17:01:00+00:00",
+       "via": "console",
+       "signature": "76871bf68b7e83de70c25393cb333b4797db9b87a2fab100262f9e2513108830"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": false
+      },
+      {
+       "kind": "ship",
+       "at": "2026-11-25T17:01:00+00:00",
+       "by": "agent",
+       "note": "ship short",
+       "open": false
+      }
+     ],
+     "peeks": [
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "smallest_arm": 181,
+       "target": 1693,
+       "by": "agent"
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "smallest_arm": 1814,
+       "target": 1693,
+       "by": "agent"
+      }
+     ],
+     "verdicts": [
+      {
+       "decision": "keep_running",
+       "headline": "Keep running: the planned sample is not reached.",
+       "winner": null,
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.06 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "wait",
+         "detail": "181 of 1,693 visitors in the smallest group (11%). Any winner before this is mostly noise."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "wait",
+         "detail": "Best is short at 43.8%, below the 95% bar set before the test."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 181,
+         "conversions": 55.0,
+         "rate": 0.30386740331491713,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 219,
+         "conversions": 65.0,
+         "rate": 0.2968036529680365,
+         "expected_share": 0.5,
+         "lift": -0.02324616023246166,
+         "ci_low": -0.3173129663875261,
+         "ci_high": 0.27082064592260274,
+         "chance_to_win": 0.43843574927649237
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 44% chance to win, lift -2.3% (95% interval -31.7% to +27.1%).",
+       "at": "2026-11-25T16:54:34+00:00",
+       "as_of": "2026-11-25T16:54:34.113922Z",
+       "refreshed": true,
+       "peeks": 1
+      },
+      {
+       "decision": "ship",
+       "headline": "Ship short.",
+       "winner": "short",
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.86 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "pass",
+         "detail": "Every group has at least 1,693 visitors."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "pass",
+         "detail": "short: 97.2%."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 1825,
+         "conversions": 555.0,
+         "rate": 0.3041095890410959,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 1814,
+         "conversions": 608.0,
+         "rate": 0.33517089305402425,
+         "expected_share": 0.5,
+         "lift": 0.10213852220467425,
+         "ci_low": -0.002547883095503495,
+         "ci_high": 0.20682492750485199,
+         "chance_to_win": 0.9720786953601197
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 97% chance to win, lift +10.2% (95% interval -0.3% to +20.7%).",
+       "at": "2026-11-25T17:01:00+00:00",
+       "as_of": "2026-11-25T17:00:59.449894Z",
+       "refreshed": true,
+       "peeks": 2
+      }
+     ],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      },
+      {
+       "at": "2026-11-25T16:54:15+00:00",
+       "actor": "agent",
+       "action": "start refused",
+       "detail": "No person has approved this experiment."
+      },
+      {
+       "at": "2026-11-25T16:54:16+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint dda4d9b6ae15"
+      },
+      {
+       "at": "2026-11-25T16:54:17+00:00",
+       "actor": "agent",
+       "action": "started in Flagsmith",
+       "detail": "approved by reviewer"
+      },
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "keep_running: Keep running: the planned sample is not reached."
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "ship: Ship short."
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "agent",
+       "action": "requested ship approval",
+       "detail": "ship short"
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "person:reviewer",
+       "action": "approved ship",
+       "detail": "via console, fingerprint 4128883838a2"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "started_at": "2026-11-25T16:54:17.366781Z",
+     "started_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Approve rollout",
+     "replay_stage": "rollout",
+     "replay_button": "gate"
+    },
+    {
+     "name": "Signup form: 3 fields vs 6",
+     "slug": "signup-form-3-fields-vs-6",
+     "created_at": "2026-11-25T16:54:12+00:00",
+     "status": "shipped",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+       "by": "reviewer",
+       "at": "2026-11-25T16:54:16+00:00",
+       "via": "console",
+       "signature": "a03b96c26f610097c713760b9a38af6511e13b0629ea41576b21120da0d7f1d5"
+      },
+      {
+       "kind": "ship",
+       "fingerprint": "4128883838a2f9419ed24003a27980a5d56ec073fda6d2994fada7b70a22fc54",
+       "by": "reviewer",
+       "at": "2026-11-25T17:01:00+00:00",
+       "via": "console",
+       "signature": "76871bf68b7e83de70c25393cb333b4797db9b87a2fab100262f9e2513108830"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:54:14+00:00",
+       "by": "agent",
+       "note": "preflight clean, plan: 2 groups",
+       "open": false
+      },
+      {
+       "kind": "ship",
+       "at": "2026-11-25T17:01:00+00:00",
+       "by": "agent",
+       "note": "ship short",
+       "open": false
+      }
+     ],
+     "peeks": [
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "smallest_arm": 181,
+       "target": 1693,
+       "by": "agent"
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "smallest_arm": 1814,
+       "target": 1693,
+       "by": "agent"
+      }
+     ],
+     "verdicts": [
+      {
+       "decision": "keep_running",
+       "headline": "Keep running: the planned sample is not reached.",
+       "winner": null,
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.06 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "wait",
+         "detail": "181 of 1,693 visitors in the smallest group (11%). Any winner before this is mostly noise."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "wait",
+         "detail": "Best is short at 43.8%, below the 95% bar set before the test."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 181,
+         "conversions": 55.0,
+         "rate": 0.30386740331491713,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 219,
+         "conversions": 65.0,
+         "rate": 0.2968036529680365,
+         "expected_share": 0.5,
+         "lift": -0.02324616023246166,
+         "ci_low": -0.3173129663875261,
+         "ci_high": 0.27082064592260274,
+         "chance_to_win": 0.43843574927649237
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 44% chance to win, lift -2.3% (95% interval -31.7% to +27.1%).",
+       "at": "2026-11-25T16:54:34+00:00",
+       "as_of": "2026-11-25T16:54:34.113922Z",
+       "refreshed": true,
+       "peeks": 1
+      },
+      {
+       "decision": "ship",
+       "headline": "Ship short.",
+       "winner": "short",
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "pass",
+         "detail": "Chi-squared p=0.86 against the approved split. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "pass",
+         "detail": "Every group has at least 1,693 visitors."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "pass",
+         "detail": "short: 97.2%."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 1825,
+         "conversions": 555.0,
+         "rate": 0.3041095890410959,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 1814,
+         "conversions": 608.0,
+         "rate": 0.33517089305402425,
+         "expected_share": 0.5,
+         "lift": 0.10213852220467425,
+         "ci_low": -0.002547883095503495,
+         "ci_high": 0.20682492750485199,
+         "chance_to_win": 0.9720786953601197
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 97% chance to win, lift +10.2% (95% interval -0.3% to +20.7%).",
+       "at": "2026-11-25T17:01:00+00:00",
+       "as_of": "2026-11-25T17:00:59.449894Z",
+       "refreshed": true,
+       "peeks": 2
+      }
+     ],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #3 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:54:12+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "4 blocking, 1 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "agent",
+       "action": "fixed the instrumentation",
+       "detail": "enable_events, events URL, default handler, stored visitor cookie, same ID for conversion"
+      },
+      {
+       "at": "2026-11-25T16:54:13+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:54:14+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": "preflight clean, plan: 2 groups"
+      },
+      {
+       "at": "2026-11-25T16:54:15+00:00",
+       "actor": "agent",
+       "action": "start refused",
+       "detail": "No person has approved this experiment."
+      },
+      {
+       "at": "2026-11-25T16:54:16+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint dda4d9b6ae15"
+      },
+      {
+       "at": "2026-11-25T16:54:17+00:00",
+       "actor": "agent",
+       "action": "started in Flagsmith",
+       "detail": "approved by reviewer"
+      },
+      {
+       "at": "2026-11-25T16:54:34+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "keep_running: Keep running: the planned sample is not reached."
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "ship: Ship short."
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "agent",
+       "action": "requested ship approval",
+       "detail": "ship short"
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "person:reviewer",
+       "action": "approved ship",
+       "detail": "via console, fingerprint 4128883838a2"
+      },
+      {
+       "at": "2026-11-25T17:01:00+00:00",
+       "actor": "agent",
+       "action": "completed in Flagsmith",
+       "detail": "ship short, approved by reviewer"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-main",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       3
+      ],
+      "experiment_id": 3
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:54:14+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "started_at": "2026-11-25T16:54:17.366781Z",
+     "started_fingerprint": "dda4d9b6ae1526009a16778e8098076e03a21e2d088bfe65afa6b723388d4feb",
+     "replay_action": "Agent rolls out the approved winner",
+     "replay_stage": "rollout",
+     "replay_button": "primary"
+    }
+   ]
+  },
+  {
+   "start": 0,
+   "story": "Same test, but the control page is slow and some visitors leave before they are counted. The split drifts and Gatekeeper calls the data invalid.",
+   "frames": [
+    {
+     "name": "Signup form: slow control page",
+     "slug": "signup-form-slow-control-page",
+     "created_at": "2026-11-25T16:49:59+00:00",
+     "status": "running",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "2b9c7cbff92d029fd8a8d9a0e30346b52c95f2ae9953580374fd6834d75fa4d4",
+       "by": "reviewer",
+       "at": "2026-11-25T16:50:00+00:00",
+       "via": "console",
+       "signature": "05445add899610fd25b4c9e606360c12e4c723719f973e452bf6a549a9ff76ce"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:50:00+00:00",
+       "by": "agent",
+       "note": "",
+       "open": false
+      }
+     ],
+     "peeks": [],
+     "verdicts": [],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:49:59+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #2 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:49:59+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:50:00+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:50:00+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": ""
+      },
+      {
+       "at": "2026-11-25T16:50:00+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint 2b9c7cbff92d"
+      },
+      {
+       "at": "2026-11-25T16:50:01+00:00",
+       "actor": "agent",
+       "action": "started in Flagsmith",
+       "detail": "approved by reviewer"
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-srm",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       2
+      ],
+      "experiment_id": 2
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:50:00+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "2b9c7cbff92d029fd8a8d9a0e30346b52c95f2ae9953580374fd6834d75fa4d4",
+     "started_at": "2026-11-25T16:50:01.299023Z",
+     "started_fingerprint": "2b9c7cbff92d029fd8a8d9a0e30346b52c95f2ae9953580374fd6834d75fa4d4",
+     "replay_action": "Running",
+     "replay_stage": "running",
+     "replay_button": "primary"
+    },
+    {
+     "name": "Signup form: slow control page",
+     "slug": "signup-form-slow-control-page",
+     "created_at": "2026-11-25T16:49:59+00:00",
+     "status": "invalid",
+     "approvals": [
+      {
+       "kind": "start",
+       "fingerprint": "2b9c7cbff92d029fd8a8d9a0e30346b52c95f2ae9953580374fd6834d75fa4d4",
+       "by": "reviewer",
+       "at": "2026-11-25T16:50:00+00:00",
+       "via": "console",
+       "signature": "05445add899610fd25b4c9e606360c12e4c723719f973e452bf6a549a9ff76ce"
+      }
+     ],
+     "requests": [
+      {
+       "kind": "start",
+       "at": "2026-11-25T16:50:00+00:00",
+       "by": "agent",
+       "note": "",
+       "open": false
+      }
+     ],
+     "peeks": [
+      {
+       "at": "2026-11-25T16:54:10+00:00",
+       "smallest_arm": 1414,
+       "target": 1693,
+       "by": "agent"
+      }
+     ],
+     "verdicts": [
+      {
+       "decision": "invalid",
+       "headline": "Data invalid: do not use these numbers.",
+       "winner": null,
+       "checks": [
+        {
+         "id": "V1",
+         "label": "Setup unchanged since approval",
+         "status": "pass",
+         "detail": "Flag, split and metrics match the approved plan."
+        },
+        {
+         "id": "V2",
+         "label": "Traffic split matches the plan",
+         "status": "fail",
+         "detail": "Planned 50% / 50%, observed 42.3% / 57.7% (chi-squared p=3.4e-19). Something other than chance decides who lands in which group: bots, a redirect, a crash in one variant, or a broken visitor ID. Flagsmith's own SRM check: not run."
+        },
+        {
+         "id": "V3",
+         "label": "Planned sample size reached",
+         "status": "wait",
+         "detail": "1,414 of 1,693 visitors in the smallest group (84%). Any winner before this is mostly noise."
+        },
+        {
+         "id": "V6",
+         "label": "Chance to win at least 95%",
+         "status": "pass",
+         "detail": "short: 99.9%."
+        }
+       ],
+       "arms": [
+        {
+         "variant": "control",
+         "exposures": 1414,
+         "conversions": 431.0,
+         "rate": 0.3048090523338048,
+         "expected_share": 0.5,
+         "lift": null,
+         "ci_low": null,
+         "ci_high": null,
+         "chance_to_win": null
+        },
+        {
+         "variant": "short",
+         "exposures": 1932,
+         "conversions": 695.0,
+         "rate": 0.35973084886128365,
+         "expected_share": 0.5,
+         "lift": 0.180184269814049,
+         "ci_low": 0.06370223694328007,
+         "ci_high": 0.2966663026848179,
+         "chance_to_win": 0.9987846528071082
+        }
+       ],
+       "flagsmith_says": "Flagsmith: short has a 100% chance to win, lift +18.0% (95% interval +6.4% to +29.7%).",
+       "at": "2026-11-25T16:54:10+00:00",
+       "as_of": "2026-11-25T16:54:09.831177Z",
+       "refreshed": true,
+       "peeks": 1
+      }
+     ],
+     "timeline": [
+      {
+       "at": "2026-11-25T16:49:59+00:00",
+       "actor": "agent",
+       "action": "drafted in Flagsmith",
+       "detail": "flag signup_form, metric signup_completed, experiment #2 (not started)"
+      },
+      {
+       "at": "2026-11-25T16:49:59+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:50:00+00:00",
+       "actor": "gatekeeper",
+       "action": "preflight",
+       "detail": "0 blocking, 0 warnings in 1 files"
+      },
+      {
+       "at": "2026-11-25T16:50:00+00:00",
+       "actor": "agent",
+       "action": "requested start approval",
+       "detail": ""
+      },
+      {
+       "at": "2026-11-25T16:50:00+00:00",
+       "actor": "person:reviewer",
+       "action": "approved start",
+       "detail": "via console, fingerprint 2b9c7cbff92d"
+      },
+      {
+       "at": "2026-11-25T16:50:01+00:00",
+       "actor": "agent",
+       "action": "started in Flagsmith",
+       "detail": "approved by reviewer"
+      },
+      {
+       "at": "2026-11-25T16:54:10+00:00",
+       "actor": "agent",
+       "action": "read results",
+       "detail": "invalid: Data invalid: do not use these numbers."
+      }
+     ],
+     "spec": {
+      "flag": "signup_form",
+      "control_value": "control",
+      "variants": [
+       {
+        "key": "short",
+        "value": "short"
+       }
+      ],
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      },
+      "metric": {
+       "name": "Signups",
+       "event": "signup_completed"
+      },
+      "hypothesis": "Asking for 3 fields instead of 6 gets more visitors to finish signing up."
+     },
+     "plan": {
+      "baseline_rate": 0.3,
+      "mde_relative": 0.15,
+      "alpha": 0.05,
+      "power": 0.8,
+      "variants": 2,
+      "daily_visitors": null,
+      "min_days": 0,
+      "per_arm": 1693,
+      "total": 3386,
+      "days_needed": null,
+      "decision_rule": {
+       "min_exposures_per_arm": 1693,
+       "min_days": 0,
+       "ship_if_chance_to_win_at_least": 0.95,
+       "drop_if_chance_to_win_at_most": 0.05,
+       "invalid_if_srm_p_below": 0.001,
+       "mde_relative": 0.15
+      },
+      "split": {
+       "control": 0.5,
+       "short": 0.5
+      }
+     },
+     "code_path": "demo/signup_fixed",
+     "flagsmith": {
+      "api_url": "http://127.0.0.1:8000/api/v1/",
+      "dashboard": "http://127.0.0.1:8000",
+      "project_id": 1,
+      "environment_key": "local-env-srm",
+      "feature_id": 1,
+      "feature_name": "signup_form",
+      "option_ids": {
+       "short": 1
+      },
+      "metric_ids": [
+       2
+      ],
+      "experiment_id": 2
+     },
+     "preflight": {
+      "root": "demo/signup_fixed",
+      "files_scanned": 1,
+      "uses_experiments": true,
+      "flag_keys": [
+       "signup_form"
+      ],
+      "event_names": [
+       "signup_completed"
+      ],
+      "blocking": 0,
+      "warnings": 0,
+      "findings": [],
+      "at": "2026-11-25T16:50:00+00:00",
+      "clean": true
+     },
+     "pending_fingerprint": "2b9c7cbff92d029fd8a8d9a0e30346b52c95f2ae9953580374fd6834d75fa4d4",
+     "started_at": "2026-11-25T16:50:01.299023Z",
+     "started_fingerprint": "2b9c7cbff92d029fd8a8d9a0e30346b52c95f2ae9953580374fd6834d75fa4d4",
+     "replay_action": "Agent reads results",
+     "replay_stage": "verdict",
+     "replay_button": "primary"
+    }
+   ]
+  }
+ ]
+}
