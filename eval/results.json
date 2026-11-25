@@ -1,0 +1,325 @@
+{
+  "generated_at": "2026-11-25T16:37:17+00:00",
+  "corpus": {
+    "cases": 22,
+    "planted_bugs": 23,
+    "clean_cases": 5
+  },
+  "gatekeeper": {
+    "caught": 23,
+    "false_alarm_cases": 0
+  },
+  "baseline": {
+    "model": "Claude Sonnet, fresh agent with the official Flagsmith setup prompt, blind case names",
+    "cases_answered": 22,
+    "caught": 19,
+    "false_alarm_cases": 0
+  },
+  "per_rule": {
+    "G1": {
+      "planted": 5,
+      "gatekeeper": 5,
+      "baseline": 5
+    },
+    "G2": {
+      "planted": 2,
+      "gatekeeper": 2,
+      "baseline": 0
+    },
+    "G3": {
+      "planted": 5,
+      "gatekeeper": 5,
+      "baseline": 4
+    },
+    "G4": {
+      "planted": 3,
+      "gatekeeper": 3,
+      "baseline": 2
+    },
+    "G5": {
+      "planted": 1,
+      "gatekeeper": 1,
+      "baseline": 1
+    },
+    "G6": {
+      "planted": 5,
+      "gatekeeper": 5,
+      "baseline": 5
+    },
+    "G9": {
+      "planted": 2,
+      "gatekeeper": 2,
+      "baseline": 2
+    }
+  },
+  "rows": [
+    {
+      "case": "py-00-G1",
+      "planted": [
+        "G1"
+      ],
+      "gatekeeper": [
+        "G1"
+      ],
+      "baseline": [
+        "G1"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "py-01-G2",
+      "planted": [
+        "G2"
+      ],
+      "gatekeeper": [
+        "G2"
+      ],
+      "baseline": [],
+      "baseline_items": 0
+    },
+    {
+      "case": "py-02-G3",
+      "planted": [
+        "G3"
+      ],
+      "gatekeeper": [
+        "G3"
+      ],
+      "baseline": [
+        "G3"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "py-03-G4",
+      "planted": [
+        "G4"
+      ],
+      "gatekeeper": [
+        "G4"
+      ],
+      "baseline": [
+        "G4"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "py-04-G6",
+      "planted": [
+        "G6"
+      ],
+      "gatekeeper": [
+        "G6"
+      ],
+      "baseline": [
+        "G6"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "py-05-G1-G3",
+      "planted": [
+        "G1",
+        "G3"
+      ],
+      "gatekeeper": [
+        "G1",
+        "G3"
+      ],
+      "baseline": [
+        "G1",
+        "G3"
+      ],
+      "baseline_items": 2
+    },
+    {
+      "case": "py-06-G3-G4",
+      "planted": [
+        "G3",
+        "G4"
+      ],
+      "gatekeeper": [
+        "G3",
+        "G4"
+      ],
+      "baseline": [
+        "G3",
+        "G4"
+      ],
+      "baseline_items": 2
+    },
+    {
+      "case": "py-07-G4-G6",
+      "planted": [
+        "G4",
+        "G6"
+      ],
+      "gatekeeper": [
+        "G4",
+        "G6"
+      ],
+      "baseline": [
+        "G6"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "py-08-G1-G6",
+      "planted": [
+        "G1",
+        "G6"
+      ],
+      "gatekeeper": [
+        "G1",
+        "G6"
+      ],
+      "baseline": [
+        "G1",
+        "G6"
+      ],
+      "baseline_items": 2
+    },
+    {
+      "case": "py-09-clean",
+      "planted": [],
+      "gatekeeper": [],
+      "baseline": [],
+      "baseline_items": 0
+    },
+    {
+      "case": "py-10-clean",
+      "planted": [],
+      "gatekeeper": [],
+      "baseline": [],
+      "baseline_items": 0
+    },
+    {
+      "case": "pyjob-11-G5",
+      "planted": [
+        "G5"
+      ],
+      "gatekeeper": [
+        "G5"
+      ],
+      "baseline": [
+        "G5"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "pyjob-12-clean",
+      "planted": [],
+      "gatekeeper": [],
+      "baseline": [],
+      "baseline_items": 0
+    },
+    {
+      "case": "js-13-G1",
+      "planted": [
+        "G1"
+      ],
+      "gatekeeper": [
+        "G1"
+      ],
+      "baseline": [
+        "G1"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "js-14-G2",
+      "planted": [
+        "G2"
+      ],
+      "gatekeeper": [
+        "G2"
+      ],
+      "baseline": [],
+      "baseline_items": 0
+    },
+    {
+      "case": "js-15-G3",
+      "planted": [
+        "G3"
+      ],
+      "gatekeeper": [
+        "G3"
+      ],
+      "baseline": [
+        "G3"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "js-16-G6",
+      "planted": [
+        "G6"
+      ],
+      "gatekeeper": [
+        "G6"
+      ],
+      "baseline": [
+        "G6"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "js-17-G9",
+      "planted": [
+        "G9"
+      ],
+      "gatekeeper": [
+        "G9"
+      ],
+      "baseline": [
+        "G9"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "js-18-G3-G9",
+      "planted": [
+        "G3",
+        "G9"
+      ],
+      "gatekeeper": [
+        "G3",
+        "G9"
+      ],
+      "baseline": [
+        "G9"
+      ],
+      "baseline_items": 1
+    },
+    {
+      "case": "js-19-G1-G6",
+      "planted": [
+        "G1",
+        "G6"
+      ],
+      "gatekeeper": [
+        "G1",
+        "G6"
+      ],
+      "baseline": [
+        "G1",
+        "G6"
+      ],
+      "baseline_items": 2
+    },
+    {
+      "case": "js-20-clean",
+      "planted": [],
+      "gatekeeper": [],
+      "baseline": [],
+      "baseline_items": 0
+    },
+    {
+      "case": "js-21-clean",
+      "planted": [],
+      "gatekeeper": [],
+      "baseline": [],
+      "baseline_items": 0
+    }
+  ]
+}

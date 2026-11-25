@@ -1,9 +1,11 @@
-.gk/
-__pycache__/
 *.egg-info/
-.venv/
-.env
 *.pyc
+.env
+.flagsmith-version
+.gk-demo/
+.gk/
 .pytest_cache/
+.venv/
+__pycache__/
 eval/runs/
 video/build/

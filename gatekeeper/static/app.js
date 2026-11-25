@@ -87,7 +87,7 @@
       $("#timeline").innerHTML = "";
       return;
     }
-    if (!state.stage) state.stage = currentStage(e);
+    if (!state.stage) state.stage = (state.list[state.sel].frames && e.replay_stage) || currentStage(e);
     const sts = stages(e);
     const sp = e.spec;
     $("#detail").innerHTML = `
@@ -117,7 +117,8 @@
     }).join("");
   }
 
-  function btn(label, action, kind = "primary", disabled = false) {
+  function btn(label, action, kind = "primary", disabled = false, force = false) {
+    if (state.mode === "replay" && !force) return "";
     const busy = state.busy === action;
     return `<button class="btn ${kind}" data-act="${action}" ${disabled || state.busy ? "disabled" : ""}>${busy ? '<span class="spin" aria-hidden="true"></span>' : ""}${esc(busy ? busyText[action] || "Working…" : label)}</button>`;
   }
@@ -125,13 +126,15 @@
   const msg = () => (state.msg ? `<div class="${state.msg.kind}">${esc(state.msg.text)}</div>` : "");
 
   function stagePanel(e) {
-    switch (state.stage) {
-      case "preflight": return preflightPanel(e);
-      case "approval": return approvalPanel(e);
-      case "running": return runningPanel(e);
-      case "verdict": return verdictPanel(e);
-      default: return rolloutPanel(e);
-    }
+    const html = ({ preflight: preflightPanel, approval: approvalPanel, running: runningPanel, verdict: verdictPanel })[state.stage]?.(e) ?? rolloutPanel(e);
+    if (state.mode !== "replay") return html;
+    const x = state.list[state.sel];
+    const nx = x.frames[x.i + 1];
+    let b = "";
+    if (nx) b = btn(nx.replay_action, nx.replay_button === "gate" ? (nx.replay_stage === "rollout" ? "approve-ship" : "approve") : "next", nx.replay_button === "gate" ? "gate" : "primary", false, true);
+    else if (x.frames.length > 1) b = btn("Replay from the start", "restart", "btn", false, true);
+    const withActions = html.includes('<div class="actions">') ? html.replace('<div class="actions">', `<div class="actions">${b}`) : html.replace('<div class="stage-top"><div>', `<div class="stage-top"><div>`).replace(/(<div class="stage-top">.*?<\/div>)(<\/div>)/s, `$1<div class="actions">${b}</div>$2`);
+    return withActions;
   }
 
   function preflightPanel(e) {
@@ -258,6 +261,7 @@
       if (!ok) return;
       if (state.mode === "replay") return step();
     }
+    if (action === "restart") { const x = state.list[state.sel]; x.i = 0; state.stage = x.frames[0].replay_stage || currentStage(x.frames[0]); render(); return; }
     if (state.mode === "replay" || action === "next") return step();
     state.busy = action;
     render();

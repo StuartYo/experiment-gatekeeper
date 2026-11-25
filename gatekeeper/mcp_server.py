@@ -9,7 +9,10 @@ from __future__ import annotations
 
 import json
 
-from mcp.server.fastmcp import FastMCP
+try:  # mcp 2.x
+    from mcp.server.mcpserver import MCPServer as FastMCP
+except ImportError:  # mcp 1.x
+    from mcp.server.fastmcp import FastMCP
 
 from . import service as svc
 from .ledger import Record

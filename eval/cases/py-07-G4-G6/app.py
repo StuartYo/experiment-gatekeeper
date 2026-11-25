@@ -1,0 +1,35 @@
+import os
+import uuid
+
+from flagsmith import EventProcessorConfig, Flagsmith
+from flagsmith.models import DefaultFlag
+from flask import Flask, request, make_response
+
+app = Flask(__name__)
+API = "https://flags.internal.example/api/v1/"
+flagsmith = Flagsmith(
+    environment_key=os.environ["FLAGSMITH_ENVIRONMENT_KEY"],
+    api_url=API,
+    enable_events=True,
+    default_flag_handler=lambda name: DefaultFlag(enabled=True, value="control"),
+)
+
+
+def current_visitor():
+    return request.cookies.get("vid") or str(uuid.uuid4())
+
+
+@app.get("/pricing")
+def pricing():
+    vid = current_visitor()
+    flag = flagsmith.get_experiment_flag("pricing_page", identifier=vid)
+    resp = make_response(f"<h1>{flag.value}</h1><a href=/buy>Buy</a>")
+    resp.set_cookie("vid", vid)
+    return resp
+
+
+@app.post("/buy")
+def buy():
+    user_email = request.form.get("email", "")
+    flagsmith.track_event("checkout", identifier=user_email)
+    return "thanks"
