@@ -2,7 +2,7 @@
 
 A CLI, MCP server and console that sit between a coding agent and Flagsmith Experimentation. The agent can draft an experiment, but it can't start one with broken tracking, start one nobody approved, or roll out a "winner" the data doesn't support yet.
 
-**Try it without installing anything:** [recorded console](DEMO_URL) (a real run against self-hosted Flagsmith 2.295.2, replayed step by step). Demo video: VIDEO_URL.
+**Try it without installing anything:** [recorded console](https://experiment-gatekeeper.vercel.app) (a real run against self-hosted Flagsmith 2.295.2, replayed step by step). Demo video: VIDEO_URL.
 
 Track 2, AI Agents and Feature Flags.
 
@@ -48,7 +48,7 @@ All numbers come from `eval/results.json` and `demo/` runs; nothing below is typ
 
 We wrote the corpus and the rules, so Gatekeeper's score here is expected; read it as "the rules do what they say". The useful number is the baseline: even when asked directly, the model missed 4 of 23. It missed both missing-default-handler warnings, one mixed-up identifier and one new-ID-per-request bug.
 
-**End to end on real Flagsmith** (self-hosted 2.295.2, Flagsmith database as the warehouse, simulated visitors, recorded in the [console replay](DEMO_URL)):
+**End to end on real Flagsmith** (self-hosted 2.295.2, Flagsmith database as the warehouse, simulated visitors, recorded in the [console replay](https://experiment-gatekeeper.vercel.app)):
 
 | Run | Visitors per group | Flagsmith's results page | Gatekeeper |
 |---|---|---|---|

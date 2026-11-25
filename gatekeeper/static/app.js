@@ -22,6 +22,8 @@
   async function load() {
     let data;
     try {
+      // gk serve only runs on this machine; a hosted copy goes straight to the recorded run
+      if (!["127.0.0.1", "localhost", "[::1]"].includes(location.hostname)) throw new Error();
       const r = await fetch("/api/state", { cache: "no-store" });
       if (!r.ok) throw new Error();
       data = await r.json();
