@@ -1,0 +1,6 @@
+{
+ "id": "js-16-G6",
+ "blind_name": "case-18",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"main.js\", \"line\": 7, \"problem\": \"A custom self-hosted api URL is set but no eventProcessorConfig eventsApiUrl, so events are not delivered to the instance that receives them.\"}]"
+}

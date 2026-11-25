@@ -1,0 +1,6 @@
+{
+ "id": "py-04-G6",
+ "blind_name": "case-04",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"app.py\", \"line\": 12, \"problem\": \"A custom self-hosted api_url is set but no events URL is configured, so exposure and conversion events are not sent to the instance that receives them.\"}]"
+}

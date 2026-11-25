@@ -1,0 +1,6 @@
+{
+ "id": "py-05-G1-G3",
+ "blind_name": "case-16",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"app.py\", \"line\": 10, \"problem\": \"enable_events=True is missing from the Flagsmith client, so no events are recorded.\"}, {\"file\": \"app.py\", \"line\": 22, \"problem\": \"The /pricing handler always generates a new uuid instead of reusing the vid cookie, so the identity differs on every view and from the one used at checkout.\"}]"
+}

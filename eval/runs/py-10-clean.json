@@ -1,0 +1,6 @@
+{
+ "id": "py-10-clean",
+ "blind_name": "case-12",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[]"
+}

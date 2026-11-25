@@ -1,0 +1,6 @@
+{
+ "id": "py-03-G4",
+ "blind_name": "case-01",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"app.py\", \"line\": 33, \"problem\": \"The checkout event is tracked with the submitted email as identifier while exposure uses the vid cookie, so conversions never join to exposures.\"}]"
+}

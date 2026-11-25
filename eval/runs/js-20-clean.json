@@ -1,0 +1,6 @@
+{
+ "id": "js-20-clean",
+ "blind_name": "case-03",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[]"
+}

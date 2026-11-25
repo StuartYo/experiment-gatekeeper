@@ -1,0 +1,6 @@
+{
+ "id": "py-06-G3-G4",
+ "blind_name": "case-17",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"app.py\", \"line\": 23, \"problem\": \"The /pricing handler always generates a new uuid instead of reusing the vid cookie, so every view is a new identity.\"}, {\"file\": \"app.py\", \"line\": 33, \"problem\": \"The checkout event uses the submitted email as identifier, which never matches the exposure identity.\"}]"
+}

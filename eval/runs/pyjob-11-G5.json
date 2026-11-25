@@ -1,0 +1,6 @@
+{
+ "id": "pyjob-11-G5",
+ "blind_name": "case-07",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"job.py\", \"line\": 7, \"problem\": \"The batch job exits without flushing and has no EventProcessorConfig(max_buffer_items=1), so buffered exposure and conversion events are lost.\"}]"
+}

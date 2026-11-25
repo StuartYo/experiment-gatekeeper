@@ -1,0 +1,6 @@
+{
+ "id": "py-08-G1-G6",
+ "blind_name": "case-14",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"app.py\", \"line\": 10, \"problem\": \"enable_events=True is missing from the Flagsmith client, so no exposures or conversion events are recorded.\"}, {\"file\": \"app.py\", \"line\": 12, \"problem\": \"A custom self-hosted api_url is set without an events URL, so events would not reach the right endpoint even once enabled.\"}]"
+}

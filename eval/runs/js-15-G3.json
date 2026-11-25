@@ -1,0 +1,6 @@
+{
+ "id": "js-15-G3",
+ "blind_name": "case-02",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"main.js\", \"line\": 9, \"problem\": \"A fresh random visitor ID is generated on every page load and never persisted, so a returning user gets a new identity and is re-bucketed and counted as a new exposure.\"}]"
+}

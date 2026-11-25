@@ -1,0 +1,6 @@
+{
+ "id": "pyjob-12-clean",
+ "blind_name": "case-15",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[]"
+}

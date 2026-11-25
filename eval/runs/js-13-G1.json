@@ -1,0 +1,6 @@
+{
+ "id": "js-13-G1",
+ "blind_name": "case-06",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"main.js\", \"line\": 3, \"problem\": \"enableEvents: true is missing from flagsmith.init, so no exposures or conversion events are recorded.\"}]"
+}

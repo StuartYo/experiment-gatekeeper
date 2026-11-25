@@ -1,0 +1,6 @@
+{
+ "id": "py-07-G4-G6",
+ "blind_name": "case-13",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"app.py\", \"line\": 12, \"problem\": \"A custom self-hosted api_url is set but no events API URL is configured via EventProcessorConfig, so events are not delivered to the instance that receives them.\"}]"
+}

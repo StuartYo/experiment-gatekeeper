@@ -1,0 +1,6 @@
+{
+ "id": "js-17-G9",
+ "blind_name": "case-21",
+ "model": "claude-sonnet (fresh subagent, blind case names)",
+ "answer": "[{\"file\": \"main.js\", \"line\": 11, \"problem\": \"getExperimentFlag is called before identify(), so the exposure is recorded for the wrong (anonymous) identity while the conversion uses the identified visitor.\"}]"
+}
