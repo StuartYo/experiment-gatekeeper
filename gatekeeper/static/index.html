@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gatekeeper · Flagsmith experiments</title>
+<meta name="description" content="Stops broken Flagsmith experiments before they start and unproven winners before they ship.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111214'/%3E%3Cpath d='M9 24V11l7-4 7 4v13' stroke='%23ffd60a' stroke-width='3' fill='none'/%3E%3Cpath d='M13 24v-7h6v7' stroke='%23fff' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#" aria-label="Gatekeeper home">
+      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#111214"/><path d="M9 24V11l7-4 7 4v13" stroke="#ffd60a" stroke-width="3" fill="none"/><path d="M13 24v-7h6v7" stroke="#fff" stroke-width="3" fill="none"/></svg>
+      <span>Gatekeeper</span>
+    </a>
+    <span class="crumb" id="env"></span>
+    <span class="grow"></span>
+    <span class="mode" id="mode" hidden></span>
+    <a class="toplink" href="https://github.com/StuartYo/experiment-gatekeeper#readme" target="_blank" rel="noopener">Docs</a>
+  </div>
+</header>
+
+<div class="banner" id="banner" hidden></div>
+
+<div class="wrap shell">
+  <nav class="list" aria-label="Experiments">
+    <div class="list-head">
+      <h2>Experiments</h2>
+      <span class="count" id="count"></span>
+    </div>
+    <ul id="exp-list"></ul>
+  </nav>
+
+  <main class="detail" id="detail">
+    <div class="empty" id="loading">Loading experiments…</div>
+  </main>
+
+  <aside class="log" aria-label="Audit trail">
+    <div class="log-head">
+      <h2>Audit trail</h2>
+      <span class="hint">Who did what. Agents can ask; only people approve.</span>
+    </div>
+    <ol id="timeline"></ol>
+  </aside>
+</div>
+
+<dialog id="approve-dlg">
+  <form method="dialog" id="approve-form">
+    <h3 id="dlg-title">Approve</h3>
+    <p id="dlg-body"></p>
+    <label for="dlg-name">Type the experiment name to confirm</label>
+    <input id="dlg-name" autocomplete="off" spellcheck="false">
+    <p class="field-err" id="dlg-err" hidden></p>
+    <div class="dlg-actions">
+      <button value="cancel" class="btn ghost" formnovalidate>Cancel</button>
+      <button value="ok" class="btn primary" id="dlg-ok">Approve</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.gk/
+__pycache__/
+*.egg-info/
+.venv/
+.env
+*.pyc
+.pytest_cache/
+eval/runs/
+video/build/
