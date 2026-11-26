@@ -27,7 +27,7 @@ draft ──> preflight ──> person approves ──> start ──> verdict �
 
 ## Results
 
-All numbers come from `eval/results.json` and `demo/` runs; nothing below is typed by hand.
+The numbers below come from two places. The preflight comparison is in `eval/results.json` (made by `eval/score.py`). The end-to-end numbers come from the recorded run against self-hosted Flagsmith (`gatekeeper/static/replay.json`, made by `demo/record_run.py`). The test corpus has no planted G7 or G8 bugs, so those two rules are covered by unit tests only, not by this comparison.
 
 **Preflight against the model alone.** 22 small apps (Python, Flask, a batch job and browser JavaScript) with 23 planted bugs and 5 clean controls (`eval/make_cases.py`). The baseline is a fresh Claude Sonnet agent given Flagsmith's official setup prompt, the answers to its questions, and an explicit request to list every instrumentation problem. Case folders were renamed so the names didn't give the bugs away.
 
