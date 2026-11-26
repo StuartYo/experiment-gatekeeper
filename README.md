@@ -126,7 +126,7 @@ Statistical thresholds are frozen in [DESIGN.md](DESIGN.md).
 
 ## AI use
 
-Built with AI coding assistants. The rules, the statistics and the approval design were checked by hand, and the tests in `tests/` cover each rule and each verdict.
+Built with AI coding assistants. The rules, the statistics and the approval design were checked by hand, and the tests in `tests/` cover each rule and each verdict. The demo video's narration is synthetic speech (Kokoro TTS).
 
 ## License
 
