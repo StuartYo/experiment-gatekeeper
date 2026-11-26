@@ -2,7 +2,7 @@
 
 A CLI, MCP server and console that sit between a coding agent and Flagsmith Experimentation. The agent can draft an experiment, but it can't start one with broken tracking, start one nobody approved, or roll out a "winner" the data doesn't support yet.
 
-**Try it without installing anything:** [recorded console](https://experiment-gatekeeper.vercel.app) (a real run against self-hosted Flagsmith 2.295.2, replayed step by step). Demo video: VIDEO_URL.
+**Try it without installing anything:** [recorded console](https://experiment-gatekeeper.vercel.app) (a real run against self-hosted Flagsmith 2.295.2, replayed step by step). Demo video: [YouTube, 2 min](https://youtu.be/FL5tHaCOnJw).
 
 Track 2, AI Agents and Feature Flags.
 
